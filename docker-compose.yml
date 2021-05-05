@@ -1,0 +1,32 @@
+version: '3.3'
+services: 
+    node: 
+      build: 
+        context: .
+        dockerfile: Dockerfile
+      depends_on: 
+        - mongo
+      ports: 
+        - "80"
+      networks: 
+        - backend          
+    nginx:
+      build: 
+        context: .
+        dockerfile: ./nginx-conf/Dockerfile
+      restart: always
+      ports: 
+        - "80:80"
+      depends_on: 
+        - node
+      networks: 
+        - backend
+    mongo:
+        image: mongo
+        ports: 
+          - 27017:27017
+
+
+networks: 
+  backend:
+    driver: bridge    

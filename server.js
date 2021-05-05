@@ -1,10 +1,20 @@
-var express = require('express');
-var bodyParser = require('body-parser')
-var app = express();
-var http = require('http').Server(app);
-var io = require('socket.io')(http);
-var mongoose = require('mongoose');
-var dbUrl = 'mongodb+srv://marcos:Samuel@221568@cluster0.npff2.mongodb.net/marcos?retryWrites=true&w=majority'
+const cors = require('cors');
+const dotenv = require('dotenv').config('./.env')
+const express = require('express');
+const bodyParser = require('body-parser')
+const app = express();
+const http = require('http').Server(app);
+const io = require('socket.io')(http);
+const mongoose = require('mongoose');
+const { url } = require('inspector');
+const dbUrl = process.env.MONGODB_URI
+
+const corsOptions ={
+  origin:'*', 
+  credentials:true,            //access-control-allow-credentials:true
+  optionSuccessStatus:200
+}
+app.use(cors(corsOptions));
 
 app.use(express.static(__dirname));
 app.use(bodyParser.json());
@@ -15,7 +25,7 @@ var Message = mongoose.model('Message',{
   message : String
 })
 
-mongoose.connect("mongodb+srv://marcos:Samuel@221568@cluster0.npff2.mongodb.net/marcos?retryWrites=true&w=majority",{ useNewUrlParser:true}).then(()=> {
+mongoose.connect(dbUrl,{ useNewUrlParser:true}).then(()=> {
     console.log("Conectado com sucesso")
 }).catch((err)=>{
     console.log("Houve um erro ao se conectar no banco"+err)
@@ -70,6 +80,6 @@ mongoose.connect(dbUrl ,{useMongoClient : true} ,(err) => {
   console.log('mongodb connected',err);
 })
 
-var server = http.listen(3000, () => {
+var server = http.listen(process.env.PORT, () => {
   console.log('server is running on port', server.address().port);
 });
